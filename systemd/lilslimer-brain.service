@@ -1,0 +1,14 @@
+[Unit]
+Description=Lil Slimer backend brain
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env python3 %h/.local/share/lilslimer/backend/brain.py
+WorkingDirectory=%h/.local/share/lilslimer/backend
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target

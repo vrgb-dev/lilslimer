@@ -1,0 +1,20 @@
+{
+  "KPackageStructure": "Plasma/Applet",
+  "KPlugin": {
+    "Authors": [
+      {
+        "Email": "vrgbdev@gmail.com",
+        "Name": "believer / vrgb-dev"
+      }
+    ],
+    "Category": "Fun and Games",
+    "Description": "Tiny reactive desktop slime companion",
+    "EnabledByDefault": true,
+    "Icon": "/icons/lilslimer.png",
+    "Id": "org.vrgb.lilslimer",
+    "License": "MIT",
+    "Name": "Lil Slimer",
+    "Version": "0.5.5"
+  },
+  "X-Plasma-API-Minimum-Version": "6.0"
+}

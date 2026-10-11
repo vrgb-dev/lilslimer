@@ -1,0 +1,18 @@
+{
+  "state": "normal",
+  "mood": "baseline",
+  "reason": "default baseline behavior",
+  "cpu_percent": 0.0,
+  "cpu_avg_30s": 0.0,
+  "cpu_avg_3m": 0.0,
+  "battery_percent": null,
+  "charging": null,
+  "recent_spike": false,
+  "calm_seconds": 0,
+  "productive_seconds": 0,
+  "terminal_active": false,
+  "updated_at": 0,
+  "hell_seconds": 0,
+  "hell_hold_seconds": 0,
+  "judge_active": false
+}
