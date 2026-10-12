@@ -14,7 +14,7 @@
     "Id": "org.vrgb.lilslimer",
     "License": "MIT",
     "Name": "Lil Slimer",
-    "Version": "0.5.5"
+    "Version": "0.6.0"
   },
   "X-Plasma-API-Minimum-Version": "6.0"
 }

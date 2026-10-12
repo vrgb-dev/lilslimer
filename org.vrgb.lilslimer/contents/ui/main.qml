@@ -148,6 +148,23 @@ PlasmoidItem {
                     "suffering professionally"
                 ]
 
+            case "unamused":
+                return [
+                    "wonder if this one bricks our computer",
+                    "shoulda got an LTS distro",
+                    "kernel panic incoming",
+                    "dependency hell incoming",
+                    "hope you made a backup",
+                    "it worked yesterday",
+                    "this better not break my drivers",
+                    "47 updates. seems reasonable.",
+                    "time to rebuild the initramfs",
+                    "guess we're beta testers",
+                    "just stop updating",
+                    "the changelog says 'minor fixes'",
+                    "see you in emergency mode"
+                ]
+
             case "hell":
                 return [
                     "overheating",
@@ -243,6 +260,12 @@ PlasmoidItem {
                 case 5: return Qt.resolvedUrl("slimerhell5.png")
                 default: return Qt.resolvedUrl("slimerhellbase.png")
             }
+        }
+
+        if (currentState === "unamused") {
+            return blinking
+                ? Qt.resolvedUrl("slimersleep.png")
+                : Qt.resolvedUrl("slimerunamused.png")
         }
 
         if (currentState === "sleep") {
@@ -395,6 +418,11 @@ PlasmoidItem {
             currentState = payload.state
 
             resetSequence()
+            if (currentState === "unamused") {
+                sequenceStep = 1
+                sequenceTimer.interval = 4820
+                sequenceTimer.restart()
+            }
 
             if (currentState === "charging") {
                 chargingActive = true
@@ -558,6 +586,25 @@ PlasmoidItem {
     }
 
     // ======================
+    // UNAMUSED (existing sequence timer)
+    // ======================
+    function advanceUnamusedSequence() {
+        if (sequenceStep === 0) {
+            blinking = false
+            sequenceTimer.interval = 4820
+            sequenceStep = 1
+        } else if (sequenceStep === 1) {
+            blinking = true
+            sequenceTimer.interval = 180
+            sequenceStep = 2
+        } else {
+            blinking = false
+            sequenceTimer.interval = 4820
+            sequenceStep = 1
+        }
+    }
+
+    // ======================
     // SLEEP
     // ======================
     function advanceSleepSequence() {
@@ -634,6 +681,9 @@ PlasmoidItem {
         }
 
         switch (currentState) {
+            case "unamused":
+                advanceUnamusedSequence()
+                break
             case "dead":
             case "drained":
                 advancePowerSequence()

@@ -17,6 +17,7 @@ class SlimerInputs:
     productive_seconds: int
     hell_seconds: int
     hell_hold_seconds: int
+    unamused_active: bool = False
 
 
 @dataclass
@@ -30,7 +31,7 @@ def decide_state(data: SlimerInputs) -> SlimerState:
     """
     State priority:
 
-    charging > battery (dead/drained) > hell > productive > idle ladder > normal
+    charging > battery (dead/drained) > hell > productive > unamused > idle ladder > normal
     """
 
     # 🔥 CHARGING OVERRIDE
@@ -71,6 +72,10 @@ def decide_state(data: SlimerInputs) -> SlimerState:
             mood="focused",
             reason="sustained work for 12+ seconds",
         )
+
+    # 😒 TEMPORARY DISCOVER NOTIFICATION
+    if data.unamused_active:
+        return SlimerState(state="unamused", mood="unamused", reason="Discover announced updates")
 
     # 😴 IDLE LADDER
     if (

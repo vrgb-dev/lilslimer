@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <strong>A tiny, reactive desktop slime companion for KDE Plasma 6.</strong><br>
+  <strong>A tiny, reactive desktop slime companion for KDE Plasma 6</strong><br>
   No accounts, grinding, or notifications. Just slime 🧪
 </p>
 
@@ -18,7 +18,7 @@
 
 ## Meet Lil Slimer
 
-Lil Slimer is a tiny digital companion who lives in your KDE Plasma panel (or on your desktop, if that's your thing). He quietly reacts to CPU activity, battery levels, charging, terminal usage, and idle time.
+Lil Slimer is a tiny digital companion who lives in your KDE Plasma panel (or on your desktop, if that's your thing). He quietly reacts to CPU activity, battery levels, charging, terminal usage, idle time, and KDE Discover update indicators.
 
 He's not a productivity dashboard or a virtual pet demanding constant attention. He just hangs out, looks around, gets sleepy, judges your terminal commands, and occasionally starts cooking when you push your computer too hard.
 
@@ -44,26 +44,32 @@ Slimer's moods are driven by your computer's activity. These GIFs are small prev
 
 | Mood | Preview | What's happening |
 |:--|:--:|:--|
-| **Active** | <img src="assets/gifs/active.gif" alt="Active Slimer" width="64"> | Normal activity. Just vibing, looking around, and living the slime life. |
-| **Calm** | <img src="assets/gifs/calm.gif" alt="Calm Slimer" width="64"> | Things have been quiet for a while. Time to relax. |
-| **Drowsy** | <img src="assets/gifs/drowsy.gif" alt="Drowsy Slimer" width="64"> | Continued inactivity. He's fighting to stay awake. |
-| **Sleeping** | <img src="assets/gifs/sleeping.gif" alt="Sleeping Slimer" width="64"> | The system has been idle long enough for a proper slime nap. |
+| **Active** | <img src="assets/gifs/active.gif" alt="Active Slimer" width="32"> | Normal activity. Just vibing, looking around, and living the slime life. |
+| **Calm** | <img src="assets/gifs/calm.gif" alt="Calm Slimer" width="32"> | Things have been quiet for a while. Time to relax. |
+| **Drowsy** | <img src="assets/gifs/drowsy.gif" alt="Drowsy Slimer" width="32"> | Continued inactivity. He's fighting to stay awake. |
+| **Sleeping** | <img src="assets/gifs/sleeping.gif" alt="Sleeping Slimer" width="32"> | The system has been idle long enough for a proper slime nap. |
 
 ### Battery Drama
 
 | Mood | Preview | What's happening |
 |:--|:--:|:--|
-| **Charging** | <img src="assets/gifs/charging.gif" alt="Charging Slimer" width="64"> | Plugged in and soaking up electricity. |
-| **Drained** | <img src="assets/gifs/drained.gif" alt="Drained Slimer" width="64"> | Low battery (11-20%). He's upset, and the blinking says it all. |
-| **Dead** | <img src="assets/gifs/dead.gif" alt="Dead Slimer" width="64"> | Critical battery (10% or below). Tell his family he slimed. |
+| **Charging** | <img src="assets/gifs/charging.gif" alt="Charging Slimer" width="32"> | Plugged in and soaking up electricity. |
+| **Drained** | <img src="assets/gifs/drained.gif" alt="Drained Slimer" width="32"> | Low battery (11-20%). He's upset! |
+| **Dead** | <img src="assets/gifs/dead.gif" alt="Dead Slimer" width="32"> | Critical battery (10% or below). Tell his family he slimed. |
 
 ### Working Hard (or Ready to Die)
 
 | Mood | Preview | What's happening |
 |:--|:--:|:--|
-| **Productive** | <img src="assets/gifs/productive.gif" alt="Productive Slimer" width="64"> | Sustained workload. Shades on. Slime grindset activated. |
-| **Hell** | <img src="assets/gifs/hell.gif" alt="Hell-mode Slimer" width="64"> | Heavy sustained workload. Compiling, stress testing, or absolutely bodying the system. |
-| **Judging** | <img src="assets/gifs/judging.gif" alt="Judging Slimer" width="64"> | Terminal detected. He's watching your commands, and he's not impressed. |
+| **Productive** | <img src="assets/gifs/productive.gif" alt="Productive Slimer" width="32"> | Sustained workload. Shades on. Slime grindset activated. |
+| **Hell** | <img src="assets/gifs/hell.gif" alt="Hell-mode Slimer" width="32"> | Heavy sustained workload. Compiling, stress testing, or absolutely bodying the system. |
+| **Judging** | <img src="assets/gifs/judging.gif" alt="Judging Slimer" width="32"> | Terminal detected. He's watching your commands, and he's not impressed. Note: He doesn't *always* judge, but when he does... boy does he.|
+
+### Update Anxiety
+
+| Mood | Preview | What's happening |
+|:--|:--:|:--|
+| **Unamused** | <img src="assets/gifs/unamused.gif" alt="Unamused Slimer blinking" width="32"> | KDE Discover's update tray icon appears. Slimer wonders if the next update will cause a kernel panic, then goes about his business. Note: He stays unimpressed for 30 seconds, then moves on.|
 
 On an idle machine, his everyday progression is roughly:
 
@@ -82,6 +88,7 @@ Battery and workload conditions, plus the special terminal-judging behavior, can
 - Battery-level and charging reactions
 - Productive and compile-hell modes
 - Terminal-triggered Judge mode
+- Discover update tray detection
 - Randomized tooltip mood descriptions
 - Lightweight **Python 3** backend managed by **systemd --user**
 - Panel and desktop scaling
@@ -93,6 +100,7 @@ Battery and workload conditions, plus the special terminal-judging behavior, can
 
 - KDE Plasma 6
 - Python 3
+- `busctl` (systemd D-Bus utility, used to detect Discover's tray icon)
 - `systemd --user`
 - `kpackagetool6`
 - `kdotool` recommended for terminal/window detection; `xdotool` fallback supported
@@ -141,7 +149,7 @@ Lil Slimer is split into two small pieces:
 | Component | Responsibility |
 |:--|:--|
 | **QML frontend** | Draws sprites, runs animations and transitions, scales the widget, and displays randomized mood tooltips. |
-| **Python backend** | Reads CPU, battery, idle, and terminal signals; evaluates state priority; writes the current state as JSON. |
+| **Python backend** | Reads CPU, battery, idle, terminal, and Discover tray status; evaluates state priority; writes the current state as JSON. |
 
 The Python brain runs as a systemd user service. The plasmoid reads its state from:
 
@@ -149,7 +157,7 @@ The Python brain runs as a systemd user service. The plasmoid reads its state fr
 ~/.local/share/plasma/plasmoids/org.vrgb.lilslimer/contents/ui/state.json
 ```
 
-No cloud service, account, or external API is required.
+No cloud service, account, or external API is required. Discover integration uses the local KDE StatusNotifierWatcher D-Bus interface; Slimer does not check for updates itself or issue notifications. The Unamused reaction fires once when Discover's tray item becomes active (including at startup), lasts 30 seconds, and does not repeat while the item stays active. Discover integration is best-effort and depends on the notifier exposing its StatusNotifierItem.
 
 ## Philosophy
 
@@ -165,7 +173,7 @@ The goal is a tiny companion that feels ambient, reactive, funny, and alive with
 
 ## Project Status
 
-**v0.5.5 — early release candidate.** Core functionality has been running on multiple KDE Plasma machines. The current installer, in-place upgrade, and uninstaller have been tested on Fedora KDE; broader distribution compatibility is not yet guaranteed.
+**v0.6.0 — public release.** Core functionality has been running on multiple KDE Plasma machines. The current installer, in-place upgrade, and uninstaller have been tested on Fedora KDE; broader distribution compatibility is not yet guaranteed.
 
 ### Ideas for Later
 
@@ -174,8 +182,9 @@ The goal is a tiny companion that feels ambient, reactive, funny, and alive with
 - KDE Store packaging
 - AUR / COPR packaging
 - GNOME support
+- Cinnamon support
 - Additional slime variants
-- Rated-R Slimer
+- Optional Rated-R Slimer
 
 The plan is to add personality without turning the project into bloated junk.
 

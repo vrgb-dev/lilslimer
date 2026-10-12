@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 import random
+import shlex
+import subprocess
 import signal
 import sys
 import time
@@ -19,6 +21,12 @@ from state_machine import SlimerInputs, decide_state
 
 
 POLL_SECONDS = 2
+DISCOVER_CHECK_SECONDS = 5
+DISCOVER_ITEM_ID = "Discover Notifier_org.kde.DiscoverNotifier"
+WATCHER_SERVICE = "org.kde.StatusNotifierWatcher"
+WATCHER_PATH = "/StatusNotifierWatcher"
+ITEM_INTERFACE = "org.kde.StatusNotifierItem"
+UNAMUSED_SECONDS = 30
 STATE_PATH = (
     Path.home()
     / ".local/share/plasma/plasmoids/org.vrgb.lilslimer/contents/ui/state.json"
@@ -109,6 +117,71 @@ class JudgeSampler:
         return judge_active
 
 
+def busctl_property(service: str, path: str, interface: str, prop: str) -> list[str] | None:
+    """Return a D-Bus property as tokens; None means the query failed."""
+    try:
+        result = subprocess.run(
+            ["busctl", "--user", "get-property", service, path, interface, prop],
+            capture_output=True,
+            text=True,
+            timeout=1.5,
+            check=True,
+        )
+        return shlex.split(result.stdout)
+    except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired, ValueError):
+        return None
+
+
+def discover_tray_active() -> bool | None:
+    """Check Discover's actual Plasma tray item, not its notification history.
+
+    None indicates a D-Bus query failure (do not interpret as icon disappearing).
+    """
+    items = busctl_property(
+        WATCHER_SERVICE, WATCHER_PATH, WATCHER_SERVICE,
+        "RegisteredStatusNotifierItems",
+    )
+    if not items or items[0] != "as":
+        return None
+
+    identity_lookup_failed = False
+    for item in items[2:]:
+        service, separator, path = item.partition("/")
+        if not separator or not service or not path:
+            continue
+        path = "/" + path
+        identity = busctl_property(service, path, ITEM_INTERFACE, "Id")
+        if identity is None:
+            identity_lookup_failed = True
+            continue
+        if identity != ["s", DISCOVER_ITEM_ID]:
+            continue
+
+        status = busctl_property(service, path, ITEM_INTERFACE, "Status")
+        if not status or status[0] != "s" or len(status) != 2:
+            return None
+        return status[1] in ("Active", "NeedsAttention")
+
+    return None if identity_lookup_failed else False
+
+
+class DiscoverWatcher:
+    def __init__(self) -> None:
+        self.was_active = False
+        self.next_check = 0.0
+        self.unamused_until = 0.0
+
+    def active(self, now: float) -> bool:
+        if now >= self.next_check:
+            self.next_check = now + DISCOVER_CHECK_SECONDS
+            is_active = discover_tray_active()
+            if is_active is not None:
+                if is_active and not self.was_active:
+                    self.unamused_until = now + UNAMUSED_SECONDS
+                self.was_active = is_active
+        return now < self.unamused_until
+
+
 def main() -> int:
     running = True
 
@@ -121,6 +194,7 @@ def main() -> int:
 
     cpu_sampler = CpuSampler()
     judge_sampler = JudgeSampler()
+    discover_watcher = DiscoverWatcher()
 
     cpu_history_30s: deque[float] = deque(maxlen=max(1, 30 // POLL_SECONDS))
     cpu_history_3m: deque[float] = deque(maxlen=max(1, 180 // POLL_SECONDS))
@@ -198,6 +272,7 @@ def main() -> int:
                 productive_seconds=productive_seconds,
                 hell_seconds=hell_seconds,
                 hell_hold_seconds=hell_hold_seconds,
+                unamused_active=discover_watcher.active(time.monotonic()),
             )
 
             slimer_state = decide_state(state_inputs)
