@@ -69,7 +69,7 @@ Slimer's moods are driven by your computer's activity. These GIFs are small prev
 
 | Mood | Preview | What's happening |
 |:--|:--:|:--|
-| **Unamused** | <img src="assets/gifs/unamused.gif" alt="Unamused Slimer blinking" width="32"> | KDE Discover's update tray icon appears. Slimer wonders if the next update will cause a kernel panic, then goes about his business. Note: He stays unimpressed for 30 seconds, then moves on.|
+| **Unamused** | <img src="assets/gifs/unamused.gif" alt="Unamused Slimer blinking" width="32"> | KDE Discover's update tray icon appears. Slimer wonders if the next update will cause a kernel panic, then goes about his business.|
 
 On an idle machine, his everyday progression is roughly:
 
@@ -173,7 +173,7 @@ The goal is a tiny companion that feels ambient, reactive, funny, and alive with
 
 ## Project Status
 
-**v0.6.0 — public release.** Core functionality has been running on multiple KDE Plasma machines. The current installer, in-place upgrade, and uninstaller have been tested on Fedora KDE; broader distribution compatibility is not yet guaranteed.
+**v0.6.1 — public release.** Core functionality has been running on multiple KDE Plasma machines. The current installer, in-place upgrade, and uninstaller have been tested on Fedora KDE; broader distribution compatibility is not yet guaranteed.
 
 ### Ideas for Later
 
