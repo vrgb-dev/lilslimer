@@ -905,6 +905,7 @@ PlasmoidItem {
     // ======================
     Item {
         anchors.centerIn: parent
+        anchors.horizontalCenterOffset: inPanel ? 1 : 0
         width: spriteSize
         height: spriteSize
 
